@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_spot/bloc/geolocation_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationScreen extends StatelessWidget {
@@ -47,20 +49,31 @@ class LocationScreen extends StatelessWidget {
         backgroundColor: Colors.blueGrey[900],
         body: Stack(
           children: [
-            Container(
+            SizedBox(
               width: double.infinity,
               height: MediaQuery.of(context).size.height,
-              child: const GoogleMap(zoomControlsEnabled: false,
-                myLocationButtonEnabled: true,
-                initialCameraPosition:
-                    CameraPosition(target: LatLng(10, 10), zoom: 12),
+              child: BlocBuilder<GeolocationBloc, GeolocationState>(
+                builder: (ctx, state) {
+                  if (state is GeoLocationLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is GeoLocationLoaded) {
+                    return const GoogleMap(
+                      zoomControlsEnabled: false,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition:
+                          CameraPosition(target: LatLng(10, 10), zoom: 12),
+                    );
+                  }else {return const Text('Something went wrong!!',style: TextStyle(color: Colors.white),);}
+                },
               ),
             ),
             Positioned(top: 0, left: 0, right: 0, child: locationSearch()),
             Positioned(
-                bottom: 40,left: 20,right: 20,
+                bottom: 40,
+                left: 20,
+                right: 20,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(80,80,80,0),
+                  padding: const EdgeInsets.fromLTRB(80, 80, 80, 0),
                   child: ElevatedButton(
                     onPressed: () {},
                     child: const Text(
